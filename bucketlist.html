@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MomentsMatter – Bucket List</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      min-height: 100vh;
+      background: radial-gradient(ellipse at center, #1b2735 0%, #090a0f 100%);
+      color: #eee;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 25px 15px 60px 15px;
+      user-select: none;
+    }
+
+    .container {
+      background: rgba(25, 25, 35, 0.85);
+      padding: 30px 40px 50px 40px;
+      border-radius: 20px;
+      max-width: 480px;
+      width: 95vw;
+      box-shadow: 0 0 25px #6f8cf9aa;
+      text-align: center;
+      z-index: 1;
+    }
+
+    h2 {
+      font-weight: 600;
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: #7ab8ff;
+      text-shadow: 0 0 8px #4e94ff99, 0 0 15px #4e94ffbb;
+    }
+
+    #xpDisplay {
+      margin-bottom: 15px;
+      color: #a5c7ff;
+      font-weight: 500;
+    }
+
+    #badge {
+      font-size: 1rem;
+      color: #ffdf80;
+      margin-bottom: 20px;
+    }
+
+    form {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+    input[type="text"] {
+      flex-grow: 1;
+      padding: 12px 15px;
+      border-radius: 12px;
+      border: none;
+      background: #15243c;
+      color: #d0d8f9;
+      box-shadow: 0 0 10px #4477ff55;
+      font-size: 1rem;
+    }
+    input[type="text"]:focus {
+      box-shadow: 0 0 25px #4477ffcc;
+      background: #1c305f;
+    }
+    button[type="submit"] {
+      padding: 12px 18px;
+      border-radius: 12px;
+      background: #4477ffcc;
+      border: none;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button[type="submit"]:hover,
+    button[type="submit"]:focus {
+      background: #6699ffcc;
+      outline: none;
+    }
+
+    ul#goalsList {
+      list-style: none;
+      max-height: 380px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+    ul#goalsList li {
+      background: #1f2a48cc;
+      margin-bottom: 12px;
+      border-radius: 12px;
+      padding: 12px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 0 10px #3355bb88 inset;
+    }
+    ul#goalsList li.completed {
+      background: #4466aa88;
+      color: #cceeffaa;
+      text-decoration: line-through;
+      box-shadow: 0 0 14px #66aaffcc inset;
+    }
+    .goal-text {
+      flex-grow: 1;
+      text-align: left;
+      font-weight: 500;
+      font-size: 1.05rem;
+    }
+
+    .goal-buttons {
+      display: flex;
+      gap: 10px;
+      margin-left: 15px;
+    }
+    .goal-btn {
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: #aabbffdd;
+      font-size: 1.15rem;
+      border-radius: 8px;
+      min-width: 32px;
+    }
+    .goal-btn:hover { color: #ddeeff; background: #3355bb22; }
+
+    #backBtn {
+      margin-top: 20px;
+      padding: 10px 24px;
+      border-radius: 14px;
+      background: transparent;
+      border: 2px solid #4477ffcc;
+      color: #a2b9ff;
+      font-weight: 600;
+      cursor: pointer;
+      min-width: 150px;
+    }
+    #backBtn:hover { background: #4477ff22; border-color: #88aaffcc; color: #d0e0ff; }
+
+    #confettiCanvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="confettiCanvas"></canvas>
+
+<div class="container" role="main">
+  <h2>Your Bucket List</h2>
+  <p id="xpDisplay">XP: 0 | Level: 1</p>
+  <div id="badge">🌱 Beginner Dreamer</div>
+  <form id="newGoalForm">
+    <input id="newGoalInput" type="text" placeholder="Add a new goal for your lifetime..." autocomplete="off" />
+    <button type="submit">Add</button>
+  </form>
+  <ul id="goalsList"></ul>
+  <button id="backBtn">⬅️ Back to Main</button>
+</div>
+
+<script>
+  // Confetti Effect
+  (() => {
+    const canvas = document.getElementById('confettiCanvas');
+    const ctx = canvas.getContext('2d');
+    let w, h;
+    let confetti = [];
+    const colors = ['#4477ff','#aabbff','#ccd9ff','#668cff','#2244ff'];
+
+    function randomRange(min, max) { return Math.random() * (max - min) + min; }
+
+    function Confetto() {
+      this.x = Math.random() * w;
+      this.y = Math.random() * h - h;
+      this.size = randomRange(7, 12);
+      this.color = colors[Math.floor(Math.random()*colors.length)];
+      this.speed = randomRange(2, 6);
+      this.angle = randomRange(0, 2*Math.PI);
+      this.spin = randomRange(0.05, 0.1);
+      this.opacity = 1;
+      this.drift = randomRange(-1,1);
+    }
+
+    Confetto.prototype.update = function() {
+      this.y += this.speed;
+      this.x += this.drift;
+      this.angle += this.spin;
+      this.opacity -= 0.01;
+      if(this.opacity < 0) this.reset();
+    };
+
+    Confetto.prototype.draw = function() {
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.angle);
+      ctx.fillStyle = this.color;
+      ctx.globalAlpha = this.opacity;
+      ctx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
+      ctx.restore();
+    };
+
+    Confetto.prototype.reset = function() {
+      this.x = Math.random() * w;
+      this.y = Math.random() * h - h;
+      this.opacity = 1;
+      this.speed = randomRange(2, 6);
+      this.size = randomRange(7, 12);
+      this.angle = randomRange(0, 2*Math.PI);
+      this.spin = randomRange(0.05, 0.1);
+      this.drift = randomRange(-1,1);
+      this.color = colors[Math.floor(Math.random()*colors.length)];
+    };
+
+    function setup() {
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = w;
+      canvas.height = h;
+      confetti = [];
+      for(let i=0; i<100; i++) confetti.push(new Confetto());
+    }
+
+    function loop() {
+      ctx.clearRect(0, 0, w, h);
+      confetti.forEach(c => { c.update(); c.draw(); });
+      requestAnimationFrame(loop);
+    }
+
+    function startConfetti(duration = 3000) {
+      canvas.style.display = 'block';
+      setTimeout(() => {
+        canvas.style.display = 'none';
+      }, duration);
+    }
+
+    window.addEventListener('resize', setup);
+    setup(); loop();
+    window.startConfetti = startConfetti;
+  })();
+
+  // App Logic
+  const newGoalForm = document.getElementById('newGoalForm');
+  const newGoalInput = document.getElementById('newGoalInput');
+  const goalsList = document.getElementById('goalsList');
+  const backBtn = document.getElementById('backBtn');
+  const xpDisplay = document.getElementById('xpDisplay');
+  const badgeDisplay = document.getElementById('badge');
+
+  let bucketList = JSON.parse(localStorage.getItem('bucketList')) || [];
+  let xp = parseInt(localStorage.getItem('xp')) || 0;
+
+  function getLevel(xp) {
+    return Math.floor(xp / 100) + 1;
+  }
+
+  function getBadge(level) {
+    if (level >= 11) return "🧠 Master of Moments";
+    if (level >= 9) return "🚀 Legendary Lifter";
+    if (level >= 7) return "🌟 Life Explorer";
+    if (level >= 5) return "✨ Vision Builder";
+    if (level >= 3) return "🏃‍♂️ Goal Getter";
+    return "🌱 Beginner Dreamer";
+  }
+
+  function updateXPDisplay() {
+    const level = getLevel(xp);
+    xpDisplay.textContent = `XP: ${xp} | Level: ${level}`;
+    badgeDisplay.textContent = getBadge(level);
+  }
+
+  function addXP(amount) {
+    const prevLevel = getLevel(xp);
+    xp += amount;
+    localStorage.setItem('xp', xp);
+    const newLevel = getLevel(xp);
+    if (newLevel > prevLevel) {
+      window.startConfetti(4000);
+      alert(`🎉 You reached Level ${newLevel}!\nNew badge unlocked: ${getBadge(newLevel)}`);
+    }
+    updateXPDisplay();
+  }
+
+  function saveBucketList() {
+    localStorage.setItem('bucketList', JSON.stringify(bucketList));
+  }
+
+  function renderBucketList() {
+    goalsList.innerHTML = '';
+    if(bucketList.length === 0) {
+      goalsList.innerHTML = '<li style="text-align:center; color:#556688; padding: 20px;">No goals added yet. Add one above!</li>';
+      return;
+    }
+    bucketList.forEach((goal, i) => {
+      const li = document.createElement('li');
+      li.className = goal.completed ? 'completed' : '';
+      li.setAttribute('data-id', i);
+
+      const span = document.createElement('span');
+      span.className = 'goal-text';
+      span.textContent = goal.text;
+      li.appendChild(span);
+
+      const btnsDiv = document.createElement('div');
+      btnsDiv.className = 'goal-buttons';
+
+      const completeBtn = document.createElement('button');
+      completeBtn.className = 'goal-btn';
+      completeBtn.textContent = goal.completed ? "↩️" : "✓";
+      completeBtn.title = goal.completed ? "Mark as incomplete" : "Mark as complete";
+      completeBtn.addEventListener('click', () => {
+        bucketList[i].completed = !bucketList[i].completed;
+        saveBucketList();
+        renderBucketList();
+        if(bucketList[i].completed) {
+          addXP(25);
+          window.startConfetti(3000); // 🎉 Confetti for goal completion
+        }
+      });
+      btnsDiv.appendChild(completeBtn);
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'goal-btn';
+      deleteBtn.textContent = "🗑️";
+      deleteBtn.title = "Delete goal";
+      deleteBtn.addEventListener('click', () => {
+        if(confirm("Delete this goal?")) {
+          bucketList.splice(i,1);
+          saveBucketList();
+          renderBucketList();
+        }
+      });
+      btnsDiv.appendChild(deleteBtn);
+
+      li.appendChild(btnsDiv);
+      goalsList.appendChild(li);
+    });
+  }
+
+  newGoalForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const val = newGoalInput.value.trim();
+    if(val.length < 3) return alert("Please enter a meaningful goal.");
+    bucketList.push({text: val, completed: false});
+    saveBucketList();
+    renderBucketList();
+    newGoalInput.value = '';
+    newGoalInput.focus();
+  });
+
+  backBtn.addEventListener('click', () => {
+    window.location.href = "index.html";
+  });
+
+  updateXPDisplay();
+  renderBucketList();
+</script>
+
+</body>
+</html>

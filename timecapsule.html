@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Time Capsule – MomentsMatter</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 40px 20px;
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at center, #0e1826 0%, #05070c 100%);
+      color: #ddeeff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: #81cfff;
+      text-shadow: 0 0 10px #3a8aff88;
+    }
+
+    p {
+      font-size: 1rem;
+      max-width: 360px;
+      margin-bottom: 30px;
+      color: #c0d8ff;
+    }
+
+    textarea {
+      width: 90%;
+      max-width: 500px;
+      height: 200px;
+      padding: 15px;
+      border-radius: 12px;
+      border: none;
+      background: #13284a;
+      color: #ddeeff;
+      font-size: 1rem;
+      resize: vertical;
+      box-shadow: 0 0 10px #3a6eff99;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background: transparent;
+      border: 2px solid #3a8aff;
+      color: #aaddff;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #2e5eff33;
+      color: #e4f2ff;
+    }
+
+    .saved {
+      margin-top: 15px;
+      color: #99ffcc;
+      font-size: 0.95rem;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>📦 Time Capsule</h1>
+  <p>Write a message to your future self. It'll be saved locally in your browser.</p>
+  <textarea id="capsuleMessage" placeholder="Dear future me..."></textarea>
+  <br />
+  <button onclick="saveMessage()">Save Message</button>
+  <div class="saved" id="savedNotice">✅ Message saved to your Time Capsule.</div>
+
+  <script>
+    const textarea = document.getElementById("capsuleMessage");
+    const savedNotice = document.getElementById("savedNotice");
+
+    function saveMessage() {
+      const message = textarea.value.trim();
+      if (message.length > 0) {
+        localStorage.setItem("timeCapsuleMessage", message);
+        savedNotice.style.display = "block";
+        setTimeout(() => {
+          savedNotice.style.display = "none";
+        }, 2500);
+      }
+    }
+
+    // Load existing message if available
+    window.onload = () => {
+      const existing = localStorage.getItem("timeCapsuleMessage");
+      if (existing) textarea.value = existing;
+    };
+  </script>
+</body>
+</html>

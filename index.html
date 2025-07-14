@@ -1,16 +1,708 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  <title>replit</title>
-  <link href="style.css" rel="stylesheet" type="text/css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MomentsMatter – Breathe & Reflect</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+
+   
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    html, body {
+      min-height: 100vh;
+      height: auto;
+      overflow-y: auto;
+      overscroll-behavior-y: contain;
+      background: radial-gradient(ellipse at center, #1b2735 0%, #090a0f 100%);
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 0 60px 0;
+      font-family: 'Poppins', sans-serif;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transition: background 1s ease, box-shadow 1s ease;
+    }
+
+ 
+    body.morning {
+      background: radial-gradient(ellipse at center, #87CEEB 0%, #1E3C72 100%);
+      box-shadow: 0 0 40px #87CEEB88 inset;
+    }
+    body.afternoon {
+      background: radial-gradient(ellipse at center, #FFD580 0%, #FF7E00 100%);
+      box-shadow: 0 0 40px #FFB34788 inset;
+    }
+    body.night {
+      background: radial-gradient(ellipse at center, #0B3D91 0%, #090A0F 100%);
+      box-shadow: 0 0 50px #0B3D9188 inset;
+    }
+
+   
+    #starfield {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      background: transparent;
+      transform-style: preserve-3d;
+      perspective: 800px;
+      overflow: visible;
+    }
+
+   
+    .container {
+      position: relative;
+      z-index: 2;
+      background: rgba(25, 25, 35, 0.85);
+      padding: 30px 40px 50px 40px;
+      border-radius: 20px;
+      max-width: 480px;
+      width: 95vw;
+      box-shadow: 0 0 25px #6f8cf9aa;
+      text-align: center;
+      user-select: text;
+      transition: box-shadow 1s ease;
+    }
+
+   
+    h1 {
+      font-weight: 600;
+      font-size: 2.5rem;
+      margin-bottom: 8px;
+      color: #7ab8ff;
+      text-shadow:
+         0 0 8px #4e94ff99,
+         0 0 15px #4e94ffbb;
+      user-select: text;
+    }
+    p.subtitle {
+      font-weight: 300;
+      font-size: 1.05rem;
+      margin-bottom: 20px;
+      color: #bbb;
+      user-select: text;
+    }
+
+   
+    input[type="date"] {
+      padding: 12px 18px;
+      font-size: 1rem;
+      border-radius: 12px;
+      border: none;
+      outline: none;
+      box-shadow: 0 0 10px #4477ff55;
+      background: #15243c;
+      color: #d0d8f9;
+      transition: box-shadow 0.3s ease;
+      width: 100%;
+      max-width: 280px;
+      margin: 0 auto 30px auto;
+      display: block;
+      cursor: pointer;
+      user-select: text;
+    }
+    input[type="date"]:focus {
+      box-shadow: 0 0 25px #4477ffcc;
+      background: #1c305f;
+    }
+
+  
+    #lifeProgress {
+      margin-bottom: 30px;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 22px;
+      background: #2e3a5a;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow:
+        inset 0 2px 5px rgba(255,255,255,0.1),
+        inset 0 -2px 5px rgba(0,0,0,0.7);
+    }
+    .progress {
+      height: 100%;
+      background: linear-gradient(90deg, #6cb6ff, #4477ff);
+      width: 0%;
+      border-radius: 14px 0 0 14px;
+      box-shadow:
+        0 0 15px #4477ffcc;
+      transition: width 1.2s ease;
+    }
+
+    #stats {
+      margin-top: 10px;
+      font-weight: 300;
+      font-size: 0.95rem;
+      color: #aabbeeee;
+      min-height: 42px;
+      user-select: text;
+    }
+
+
+    #miniClock {
+      font-weight: 600;
+      font-size: 1.15rem;
+      margin-bottom: 25px;
+      letter-spacing: 0.04em;
+      color: #a1c0ffdd;
+      text-shadow: 0 0 8px #5b8cffaa;
+      font-variant-numeric: tabular-nums;
+      user-select: none;
+    }
+
+
+    .breath-wrapper {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      margin: 0 auto 30px;
+      perspective: 700px;
+      user-select: none;
+    }
+    .breath-circle {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, #4a7effdd 40%, #0036ff33 90%);
+      box-shadow:
+        0 0 30px #4466ffbb,
+        inset 0 0 15px #2f54ffbb;
+      animation: breatheAnim 12s ease-in-out infinite;
+      transform-origin: center;
+      transition: box-shadow 0.3s ease;
+      filter: drop-shadow(0 0 6px #4466ff88);
+      will-change: transform;
+    }
+
+    @keyframes breatheAnim {
+      0%, 100% { transform: scale(1); }
+      25% { transform: scale(1.3); }
+      50% { transform: scale(1); }
+      75% { transform: scale(0.8); }
+    }
+
+ 
+    .quote {
+      font-style: italic;
+      font-weight: 300;
+      font-size: 1.15rem;
+      color: #b2d0ffcc;
+      max-width: 360px;
+      margin: 0 auto 15px;
+      min-height: 48px;
+      user-select: text;
+      transition: opacity 0.5s ease;
+    }
+
+
+    #affirmation {
+      font-weight: 400;
+      font-size: 1rem;
+      color: #89aaffdd;
+      min-height: 24px;
+      margin-top: 10px;
+      font-style: normal;
+      user-select: none;
+    }
+
+    button {
+      cursor: pointer;
+      background: transparent;
+      border: 2px solid #4477ffcc;
+      padding: 10px 20px;
+      border-radius: 14px;
+      font-weight: 600;
+      color: #a2b9ff;
+      letter-spacing: 0.05em;
+      transition: all 0.3s ease;
+      user-select: none;
+      margin: 10px 10px 0 10px;
+      min-width: 130px;
+    }
+    button:hover, button:focus {
+      background: #4477ff22;
+      border-color: #88aaffcc;
+      color: #d0e0ff;
+      outline: none;
+    }
+
+ 
+    #bucketListBtn {
+      margin-top: 20px;
+      width: 100%;
+      max-width: 280px;
+    }
+
+    
+    #ambientControls {
+      margin-top: 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      user-select: none;
+    }
+    #ambientControls label {
+      font-weight: 500;
+      color: #a2b9ffcc;
+      user-select: none;
+    }
+    #ambientSelect {
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: none;
+      background: #15243c;
+      color: #d0d8f9;
+      font-weight: 500;
+      cursor: pointer;
+      max-width: 280px;
+      width: 100%;
+      box-shadow: 0 0 10px #4477ff55;
+      user-select: none;
+      transition: box-shadow 0.3s ease;
+    }
+    #ambientSelect:hover, #ambientSelect:focus {
+      box-shadow: 0 0 20px #4477ffcc;
+      outline: none;
+    }
+    #ambientVolume {
+      width: 280px;
+      max-width: 95vw;
+    }
+
+    
+    #confettiCanvas {
+      position: fixed;
+      pointer-events: none;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      user-select: none;
+    }
+
+ 
+    @media (max-width: 440px) {
+      .container {
+        padding: 20px 20px 40px 20px;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+      .breath-wrapper {
+        width: 130px;
+        height: 130px;
+      }
+      .breath-circle {
+        width: 130px;
+        height: 130px;
+      }
+      #miniClock {
+        font-size: 1rem;
+      }
+      .quote {
+        font-size: 1rem;
+        max-width: 90vw;
+      }
+      #ambientVolume {
+        width: 95vw;
+      }
+    }
+  </style>
 </head>
-
 <body>
-  Hello world
-  <script src="script.js"></script>
-</body>
 
+<canvas id="starfield"></canvas>
+<canvas id="confettiCanvas"></canvas>
+
+<div class="container" role="main" aria-label="Moments Matter breathing and life progress app">
+  <h1>MomentsMatter</h1>
+  <p class="subtitle">Enter your birthdate and breathe with time</p>
+  <input type="date" id="birthDate" aria-label="Select your birthdate" max="9999-12-31" />
+
+  <div id="miniClock" aria-live="polite" aria-atomic="true">--:--:--</div>
+
+  <div id="lifeProgress" aria-live="polite" aria-atomic="true">
+    <div class="progress-bar" aria-label="Life progress bar">
+      <div class="progress" id="progressFill"></div>
+    </div>
+    <div id="stats"></div>
+  </div>
+
+  <div class="breath-wrapper" aria-label="Breathing animation">
+    <div class="breath-circle" aria-hidden="true"></div>
+  </div>
+
+  <div class="quote" id="quoteDisplay" aria-live="polite" aria-atomic="true">Take a deep breath...</div>
+  <div id="affirmation" aria-live="polite" aria-atomic="true"></div>
+
+  <button id="musicToggleBtn" aria-pressed="false" aria-label="Toggle background music">🎵 Toggle Music</button>
+  <button id="bucketListBtn" aria-label="Go to Bucket List">📝 Go to Bucket List</button>
+  <button id="timeCapsuleBtn" aria-label="Go to Time Capsule">📦 Time Capsule</button>
+
+
+  <div id="ambientControls" aria-label="Ambient nature sounds controls">
+    <label for="ambientSelect">Ambient Nature Sounds:</label>
+    <select id="ambientSelect" aria-controls="ambientVolume">
+      <option value="none">None</option>
+      <option value="waves">Waves</option>
+      <option value="rain">Rain</option>
+      <option value="forest">Forest</option>
+    </select>
+    <input type="range" id="ambientVolume" min="0" max="1" step="0.01" value="0.3" aria-label="Ambient sound volume" />
+  </div>
+
+  <audio id="bgMusic" loop preload="auto" src="https://cdn.pixabay.com/download/audio/2022/03/16/audio_65c2334e69.mp3?filename=calm-meditation-112906.mp3" crossorigin="anonymous"></audio>
+
+  <audio id="ambientWaves" loop preload="auto" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_1e1612386b.mp3?filename=sea-waves-gentle-ambient.mp3" crossorigin="anonymous"></audio>
+  <audio id="ambientRain" loop preload="auto" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_b8541207f4.mp3?filename=rain-forest-ambient-11470.mp3" crossorigin="anonymous"></audio>
+  <audio id="ambientForest" loop preload="auto" src="https://cdn.pixabay.com/download/audio/2022/11/16/audio_522ab43d00.mp3?filename=forest-ambience-12219.mp3" crossorigin="anonymous"></audio>
+</div>
+
+<script>
+
+  (() => {
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let w, h;
+    let stars = [];
+    let numStars = 120;
+
+    function randomRange(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    function setup() {
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = w;
+      canvas.height = h;
+      stars = [];
+      for(let i=0; i<numStars; i++) {
+        stars.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          size: randomRange(0.4, 1.4),
+          speed: randomRange(0.02, 0.15),
+          alpha: randomRange(0.1, 0.9),
+          twinkleDir: Math.random() > 0.5 ? 1 : -1
+        });
+      }
+    }
+
+    let mouseX = 0;
+    let mouseY = 0;
+
+    window.addEventListener('mousemove', e => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      stars.forEach(s => {
+        s.alpha += 0.01 * s.twinkleDir;
+        if(s.alpha >= 1) s.twinkleDir = -1;
+        if(s.alpha <= 0.1) s.twinkleDir = 1;
+        s.x += s.speed;
+        if(s.x > w) s.x = 0;
+
+  
+        let offsetX = (mouseX - w/2) * 0.005 * s.size;
+        let offsetY = (mouseY - h/2) * 0.005 * s.size;
+
+        ctx.beginPath();
+        ctx.arc(s.x + offsetX, s.y + offsetY, s.size, 0, 2 * Math.PI);
+        ctx.fillStyle = `rgba(255, 255, 255, ${s.alpha.toFixed(2)})`;
+        ctx.shadowColor = `rgba(255,255,255,${(s.alpha*0.8).toFixed(2)})`;
+        ctx.shadowBlur = 4;
+        ctx.fill();
+      });
+    }
+
+    function loop() {
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    window.addEventListener('resize', setup);
+    setup();
+    loop();
+  })();
+
+  (() => {
+    const canvas = document.getElementById('confettiCanvas');
+    const ctx = canvas.getContext('2d');
+    let w, h;
+    let confetti = [];
+    let confettiCount = 100;
+    let animationRunning = false;
+
+    function randomRange(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    function setup() {
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = w;
+      canvas.height = h;
+      confetti = [];
+      for(let i=0; i<confettiCount; i++) {
+        confetti.push({
+          x: Math.random() * w,
+          y: Math.random() * h - h,
+          size: randomRange(6, 12),
+          speedY: randomRange(1, 3),
+          speedX: randomRange(-1, 1),
+          rotation: Math.random() * 360,
+          rotationSpeed: randomRange(5, 15),
+          color: `hsl(${Math.floor(Math.random()*360)}, 70%, 65%)`
+        });
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      confetti.forEach(c => {
+        ctx.save();
+        ctx.translate(c.x, c.y);
+        ctx.rotate(c.rotation * Math.PI / 180);
+        ctx.fillStyle = c.color;
+        ctx.fillRect(-c.size/2, -c.size/4, c.size, c.size/2);
+        ctx.restore();
+
+        c.y += c.speedY;
+        c.x += c.speedX;
+        c.rotation += c.rotationSpeed;
+
+        if(c.y > h) {
+          c.y = -10;
+          c.x = Math.random() * w;
+          c.rotation = Math.random() * 360;
+        }
+      });
+    }
+
+    function startConfetti(duration = 5000) {
+      if(animationRunning) return;
+      animationRunning = true;
+      setup();
+      let startTime = performance.now();
+
+      function frame(time) {
+        draw();
+        if(time - startTime < duration) {
+          requestAnimationFrame(frame);
+        } else {
+          animationRunning = false;
+          ctx.clearRect(0, 0, w, h);
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+
+    window.addEventListener('resize', setup);
+
+    window.startConfetti = startConfetti;
+  })();
+
+  const birthInput = document.getElementById("birthDate");
+  const progressFill = document.getElementById("progressFill");
+  const stats = document.getElementById("stats");
+  const quoteDisplay = document.getElementById("quoteDisplay");
+  const affirmationDisplay = document.getElementById("affirmation");
+  const breathCircle = document.querySelector(".breath-circle");
+  const musicToggleBtn = document.getElementById("musicToggleBtn");
+  const bgMusic = document.getElementById("bgMusic");
+  const miniClock = document.getElementById("miniClock");
+  const bucketListBtn = document.getElementById("bucketListBtn");
+
+  const ambientSelect = document.getElementById("ambientSelect");
+  const ambientVolume = document.getElementById("ambientVolume");
+  const ambientSounds = {
+    waves: document.getElementById("ambientWaves"),
+    rain: document.getElementById("ambientRain"),
+    forest: document.getElementById("ambientForest"),
+  };
+  let currentAmbient = null;
+
+  let breathCycles = 0;
+  let lifeSpanYears = 80;
+
+  function updateMiniClock() {
+    const now = new Date();
+    const pad = (n) => n.toString().padStart(2, '0');
+    miniClock.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  }
+  setInterval(updateMiniClock, 1000);
+  updateMiniClock();
+
+  const quotesMorning = [
+    "Good morning! Every moment matters.",
+    "Rise and shine — breathe and begin.",
+    "Start fresh, with calm and focus.",
+    "The day is yours to create."
+  ];
+  const quotesAfternoon = [
+    "Keep going — you’re doing great.",
+    "Breathe deeply and refocus.",
+    "Momentum is built one breath at a time.",
+    "Stay centered, stay strong."
+  ];
+  const quotesNight = [
+    "Good night — rest and renew.",
+    "Let go of stress, inhale peace.",
+    "Reflect on the day with kindness.",
+    "Prepare your mind for calm dreams."
+  ];
+
+  function getTimeOfDayQuotes() {
+    const hour = new Date().getHours();
+    if(hour >= 5 && hour < 12) return quotesMorning;
+    if(hour >= 12 && hour < 18) return quotesAfternoon;
+    return quotesNight;
+  }
+
+  function updateQuote() {
+    const quotesArray = getTimeOfDayQuotes();
+    const q = quotesArray[Math.floor(Math.random() * quotesArray.length)];
+    quoteDisplay.style.opacity = 0;
+    setTimeout(() => {
+      quoteDisplay.textContent = q;
+      quoteDisplay.style.opacity = 1;
+    }, 400);
+  }
+  setInterval(updateQuote, 20000);
+  updateQuote();
+
+
+  function updateLifeProgress() {
+    const birthDate = new Date(birthInput.value);
+    if (isNaN(birthDate)) {
+      progressFill.style.width = "0%";
+      stats.textContent = "";
+      return;
+    }
+    const now = new Date();
+    const lifeSpanMs = lifeSpanYears * 365.25 * 24 * 60 * 60 * 1000;
+    const livedMs = now - birthDate;
+    const percent = Math.min((livedMs / lifeSpanMs) * 100, 100).toFixed(2);
+
+    progressFill.style.width = percent + "%";
+
+    const daysLived = Math.floor(livedMs / (1000 * 60 * 60 * 24));
+    const years = Math.floor(daysLived / 365.25);
+    const months = Math.floor((daysLived % 365.25) / 30.44);
+    const days = Math.floor((daysLived % 365.25) % 30.44);
+
+    stats.textContent = `You've lived about ${years}y ${months}m ${days}d — that's ${percent}% of an ${lifeSpanYears}-year life.`;
+
+
+    if(percent >= 50 && percent < 50.5) {
+      window.startConfetti();
+    }
+  }
+
+  birthInput.addEventListener("change", () => {
+    updateLifeProgress();
+  });
+
+
+  function breathingCycle() {
+    breathCycles++;
+    affirmationDisplay.textContent = `Breaths taken: ${breathCycles}`;
+  }
+
+  let breathTimeout;
+  function startBreathingAnimation() {
+    breathCircle.style.animation = 'breatheAnim 12s ease-in-out infinite';
+    if(breathTimeout) clearInterval(breathTimeout);
+    breathTimeout = setInterval(() => {
+      breathingCycle();
+    }, 12000);
+  }
+  startBreathingAnimation();
+
+  musicToggleBtn.addEventListener("click", () => {
+    if(bgMusic.paused) {
+      bgMusic.play();
+      musicToggleBtn.setAttribute("aria-pressed", "true");
+      breathCircle.style.animation = 'pulseAnim 1.33s ease-in-out infinite';
+      if(breathTimeout) clearInterval(breathTimeout);
+    } else {
+      bgMusic.pause();
+      musicToggleBtn.setAttribute("aria-pressed", "false");
+      breathCircle.style.animation = 'breatheAnim 12s ease-in-out infinite';
+      startBreathingAnimation();
+    }
+  });
+
+  const styleSheet = document.createElement("style");
+  styleSheet.type = "text/css";
+  styleSheet.innerText = `
+    @keyframes pulseAnim {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 30px #5a7fff; }
+      50% { transform: scale(1.1); box-shadow: 0 0 40px #7799ffcc; }
+    }
+  `;
+  document.head.appendChild(styleSheet);
+
+  bucketListBtn.addEventListener("click", () => {
+    window.open("bucketlist.html", "_blank");
+  });
+
+  ambientSelect.addEventListener("change", () => {
+    const choice = ambientSelect.value;
+    if(currentAmbient && currentAmbient !== ambientSounds[choice]) {
+      currentAmbient.pause();
+      currentAmbient.currentTime = 0;
+      currentAmbient = null;
+    }
+    if(choice === "none") {
+      if(currentAmbient) {
+        currentAmbient.pause();
+        currentAmbient.currentTime = 0;
+      }
+      currentAmbient = null;
+      return;
+    }
+    currentAmbient = ambientSounds[choice];
+    currentAmbient.volume = ambientVolume.value;
+    currentAmbient.play();
+  });
+
+  ambientVolume.addEventListener("input", () => {
+    if(currentAmbient) {
+      currentAmbient.volume = ambientVolume.value;
+    }
+  });
+
+ 
+  function setBodyTheme() {
+    const hour = new Date().getHours();
+    document.body.classList.remove("morning", "afternoon", "night");
+    if(hour >= 5 && hour < 12) document.body.classList.add("morning");
+    else if(hour >= 12 && hour < 18) document.body.classList.add("afternoon");
+    else document.body.classList.add("night");
+  }
+  setBodyTheme();
+
+
+  if(birthInput.value) updateLifeProgress();
+  document.getElementById("timeCapsuleBtn").addEventListener("click", () => {
+    window.open("timecapsule.html", "_blank");
+  });
+
+
+</script>
+
+</body>
 </html>
