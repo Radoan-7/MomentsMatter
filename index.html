@@ -342,6 +342,7 @@
 
   <div class="quote" id="quoteDisplay" aria-live="polite" aria-atomic="true">Take a deep breath...</div>
   <div id="affirmation" aria-live="polite" aria-atomic="true"></div>
+  <button id="productiveModeBtn" aria-label="Go to Productive Mode">💼 Productive Mode</button>
 
   <button id="musicToggleBtn" aria-pressed="false" aria-label="Toggle background music">🎵 Toggle Music</button>
   <button id="bucketListBtn" aria-label="Go to Bucket List">📝 Go to Bucket List</button>
@@ -700,6 +701,10 @@
   document.getElementById("timeCapsuleBtn").addEventListener("click", () => {
     window.open("timecapsule.html", "_blank");
   });
+  document.getElementById("productiveModeBtn").addEventListener("click", () => {
+    window.open("productive.html", "_blank");
+  });
+
 
 
 </script>
