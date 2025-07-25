@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Productive Mode – MomentsMatter</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+
+    /* Reset */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+
+    html, body {
+      min-height: 100vh;
+      background: radial-gradient(ellipse at center, #0a1a0a 0%, #031003 100%);
+      color: #d0f0c0;
+      font-family: 'Poppins', sans-serif;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      overflow-x: hidden;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+
+    .container {
+      background: rgba(10, 25, 10, 0.85);
+      padding: 30px 40px 50px 40px;
+      border-radius: 24px;
+      max-width: 480px;
+      width: 95vw;
+      box-shadow:
+        0 0 25px #2d8c30cc,
+        inset 0 0 40px #1c4d0ccc;
+      text-align: center;
+      user-select: text;
+      position: relative;
+      overflow: visible;
+    }
+
+    h1 {
+      font-weight: 600;
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: #82d84a;
+      text-shadow:
+        0 0 12px #4ebf1a,
+        0 0 30px #74d41a99;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+      color: #a9d18e;
+      user-select: text;
+    }
+
+    input[type="number"] {
+      padding: 12px 20px;
+      font-size: 1rem;
+      border-radius: 16px;
+      border: none;
+      outline: none;
+      box-shadow: 0 0 18px #66bb1a55;
+      background: #142a10;
+      color: #c9ef94;
+      width: 100%;
+      max-width: 200px;
+      margin: 0 auto 30px auto;
+      display: block;
+      user-select: text;
+      transition: box-shadow 0.3s ease;
+      cursor: text;
+    }
+    input[type="number"]:focus {
+      box-shadow: 0 0 30px #85e22bcc;
+      background: #1d3b16;
+    }
+
+    #timerDisplay {
+      font-weight: 600;
+      font-size: 3.6rem;
+      letter-spacing: 0.15em;
+      color: #b9ff7fdd;
+      text-shadow:
+        0 0 18px #90ff1a,
+        0 0 30px #4ef01aee;
+      user-select: none;
+      margin-bottom: 40px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Orb Container */
+    #orbContainer {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      margin: 0 auto 40px auto;
+      user-select: none;
+      filter: drop-shadow(0 0 14px #52d337aa);
+      cursor: default;
+    }
+
+    /* The glowing orb layers */
+    .orb {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      animation-timing-function: ease-in-out;
+    }
+
+    /* Outer glow */
+    .orb.outer {
+      width: 160px;
+      height: 160px;
+      background: radial-gradient(circle, #3ec93488 0%, transparent 70%);
+      filter: blur(18px);
+      animation: pulseGlow 4.5s infinite alternate;
+      z-index: 1;
+    }
+
+    /* Middle glow */
+    .orb.middle {
+      width: 130px;
+      height: 130px;
+      background: radial-gradient(circle, #59d845cc 0%, #1a3c0a 90%);
+      box-shadow:
+        0 0 20px #63d91faa,
+        inset 0 0 18px #4dd616cc;
+      animation: slowRotate 22s linear infinite;
+      z-index: 2;
+    }
+
+    /* Inner orb */
+    .orb.inner {
+      width: 90px;
+      height: 90px;
+      background: radial-gradient(circle, #a0ff5a 0%, #235515 95%);
+      box-shadow:
+        0 0 35px #96ff00ee,
+        inset 0 0 40px #aaff00ee;
+      animation: subtleBounce 3.7s ease-in-out infinite;
+      z-index: 3;
+    }
+
+    /* Overlay ripple */
+    .orb.ripple {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 3px solid #66ff1a88;
+      animation: rippleExpand 4s ease-out infinite;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      z-index: 0;
+      position: absolute;
+    }
+
+    /* Animations */
+    @keyframes pulseGlow {
+      0%, 100% {
+        opacity: 0.7;
+        filter: blur(16px);
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        opacity: 1;
+        filter: blur(24px);
+        transform: translate(-50%, -50%) scale(1.1);
+      }
+    }
+
+    @keyframes slowRotate {
+      0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    @keyframes subtleBounce {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.05);
+      }
+    }
+
+    @keyframes rippleExpand {
+      0% {
+        opacity: 0.8;
+        transform: translate(-50%, -50%) scale(1);
+        border-width: 3px;
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.4);
+        border-width: 0;
+      }
+    }
+
+    /* Buttons */
+    button {
+      cursor: pointer;
+      background: transparent;
+      border: 2px solid #59d845cc;
+      padding: 12px 26px;
+      border-radius: 14px;
+      font-weight: 600;
+      color: #b9ff7f;
+      letter-spacing: 0.05em;
+      transition: all 0.3s ease;
+      user-select: none;
+      margin: 8px 8px 0 8px;
+      min-width: 130px;
+      box-shadow:
+        0 0 15px #5de335aa;
+    }
+    button:hover, button:focus {
+      background: #59d84522;
+      border-color: #a3ff67cc;
+      color: #d4ff9a;
+      outline: none;
+      box-shadow:
+        0 0 25px #9aff4fcc,
+        0 0 50px #7fff3ecc;
+    }
+
+    /* Responsive */
+    @media (max-width: 440px) {
+      .container {
+        padding: 20px 20px 40px 20px;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+      #orbContainer {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 30px;
+      }
+      #timerDisplay {
+        font-size: 2.8rem;
+        margin-bottom: 30px;
+      }
+      input[type="number"] {
+        max-width: 140px;
+        margin-bottom: 28px;
+      }
+      button {
+        min-width: 110px;
+        padding: 10px 20px;
+        margin: 6px 6px 0 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container" role="main" aria-label="Productive Mode focus timer with glowing green orb animation">
+  <h1>Productive Mode</h1>
+  <label for="goalInput">Set focus goal (minutes):</label>
+  <input
+    id="goalInput"
+    type="number"
+    min="1"
+    max="240"
+    value="25"
+    aria-describedby="goalHelp"
+    aria-label="Set focus goal in minutes between 1 and 240"
+  />
+  <div id="timerDisplay" aria-live="polite" aria-atomic="true" role="timer">00:00</div>
+
+  <div id="orbContainer" aria-hidden="true" role="img" aria-label="Green glowing orb animation">
+    <div class="orb outer"></div>
+    <div class="orb ripple"></div>
+    <div class="orb middle"></div>
+    <div class="orb inner"></div>
+  </div>
+
+  <div>
+    <button id="startBtn" aria-label="Start focus timer">Start</button>
+    <button id="pauseBtn" aria-label="Pause focus timer" disabled>Pause</button>
+    <button id="resetBtn" aria-label="Reset focus timer">Reset</button>
+    <button id="backBtn" aria-label="Back to main page">Back to Main</button>
+  </div>
+</div>
+
+<script>
+  // Elements
+  const timerDisplay = document.getElementById('timerDisplay');
+  const goalInput = document.getElementById('goalInput');
+  const startBtn = document.getElementById('startBtn');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const backBtn = document.getElementById('backBtn');
+
+  let timer = null;
+  let elapsedSeconds = 0;
+  let focusGoalMinutes = parseInt(goalInput.value, 10);
+  let isRunning = false;
+
+  function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const secs = (seconds % 60).toString().padStart(2, '0');
+    return `${mins}:${secs}`;
+  }
+
+  function updateTimerDisplay() {
+    timerDisplay.textContent = formatTime(elapsedSeconds);
+  }
+
+  function startTimer() {
+    if (isRunning) return;
+    isRunning = true;
+    startBtn.disabled = true;
+    pauseBtn.disabled = false;
+    goalInput.disabled = true;
+
+    timer = setInterval(() => {
+      elapsedSeconds++;
+      updateTimerDisplay();
+
+      if (elapsedSeconds >= focusGoalMinutes * 60) {
+        clearInterval(timer);
+        isRunning = false;
+        startBtn.disabled = false;
+        pauseBtn.disabled = true;
+        goalInput.disabled = false;
+
+        // Orb glow pulse on completion (temporarily)
+        const orbContainer = document.getElementById('orbContainer');
+        orbContainer.style.filter = 'drop-shadow(0 0 35px #9aff00cc)';
+        setTimeout(() => {
+          orbContainer.style.filter = 'drop-shadow(0 0 14px #52d337aa)';
+        }, 4000);
+
+        alert('Focus session completed! Great job 🌿');
+      }
+    }, 1000);
+  }
+
+  function pauseTimer() {
+    if (!isRunning) return;
+    clearInterval(timer);
+    isRunning = false;
+    startBtn.disabled = false;
+    pauseBtn.disabled = true;
+  }
+
+  function resetTimer() {
+    clearInterval(timer);
+    isRunning = false;
+    elapsedSeconds = 0;
+    updateTimerDisplay();
+
+    startBtn.disabled = false;
+    pauseBtn.disabled = true;
+    goalInput.disabled = false;
+    backBtn.focus();
+  }
+
+  goalInput.addEventListener('change', () => {
+    let val = parseInt(goalInput.value, 10);
+    if (isNaN(val) || val < 1) val = 1;
+    else if (val > 240) val = 240;
+    goalInput.value = val;
+    focusGoalMinutes = val;
+    if (!isRunning) resetTimer();
+  });
+
+  startBtn.addEventListener('click', startTimer);
+  pauseBtn.addEventListener('click', pauseTimer);
+  resetBtn.addEventListener('click', resetTimer);
+
+  backBtn.addEventListener('click', () => {
+    window.open('index.html', '_blank');
+  });
+
+  // Initialize UI
+  updateTimerDisplay();
+  resetTimer();
+</script>
+</body>
+</html>
